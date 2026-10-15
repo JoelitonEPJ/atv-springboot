@@ -1,8 +1,11 @@
 package biblioteca.biblioteca.Service;
 
-import biblioteca.biblioteca.Dto.LivroPostPutDto;
+import biblioteca.biblioteca.Dto.LivroPostDto;
+import biblioteca.biblioteca.Dto.LivroPutDto;
 import biblioteca.biblioteca.Dto.LivroResponseDto;
+import biblioteca.biblioteca.Model.Autor;
 import biblioteca.biblioteca.Model.Livro;
+import biblioteca.biblioteca.Repository.AutorRepository;
 import biblioteca.biblioteca.Repository.LivroRepository;
 
 import org.modelmapper.ModelMapper;
@@ -23,9 +26,13 @@ public class LivroCrudPadraoService implements LivroCrudService {
     @Autowired
     LivroRepository livroRepository;
 
+    @Autowired
+    AutorRepository autorRepository;
+
     @Override
-    public LivroResponseDto criarLivro(LivroPostPutDto livroPostPutDto) {
-        Livro livro = modelMapper.map(livroPostPutDto, Livro.class);
+    public LivroResponseDto criarLivro(LivroPostDto livroPostDto) {
+        Livro livro = modelMapper.map(livroPostDto, Livro.class);
+        livro.setAutor(obterAutorExistente(livroPostDto.getAutorId()));
         return modelMapper.map(livroRepository.save(livro), LivroResponseDto.class);
     }
 
@@ -43,18 +50,18 @@ public class LivroCrudPadraoService implements LivroCrudService {
     }
 
     @Override
-    public LivroResponseDto atualizarLivro(String isbn, LivroPostPutDto livroPostPutDto) {
+    public LivroResponseDto atualizarLivro(String isbn, LivroPutDto livroPutDto) {
         Livro livro = obterLivroExistente(isbn);
-        livro.setAno(livroPostPutDto.getAno());
-        livro.setAutor(livroPostPutDto.getAutor());
-        livro.setEdicao(livroPostPutDto.getEdicao());
-        livro.setTituloLivro(livroPostPutDto.getTituloLivro());
+        livro.setAno(livroPutDto.getAno());
+        livro.setAutor(obterAutorExistente(livroPutDto.getAutorId()));
+        livro.setEdicao(livroPutDto.getEdicao());
+        livro.setTituloLivro(livroPutDto.getTituloLivro());
         return modelMapper.map(livroRepository.save(livro), LivroResponseDto.class);
     }
 
     @Override
     public void removerLivro(String isbn) {
-        livroRepository.deleteById(isbn);
+        livroRepository.delete(obterLivroExistente(isbn));
     }
 
     @Override
@@ -80,6 +87,11 @@ public class LivroCrudPadraoService implements LivroCrudService {
     private Livro obterLivroExistente(String isbn) {
         return livroRepository.findById(isbn)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Livro não encontrado"));
+    }
+
+    private Autor obterAutorExistente(Long autorId) {
+        return autorRepository.findById(autorId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Autor não encontrado"));
     }
 
 }

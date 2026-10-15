@@ -7,7 +7,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import biblioteca.biblioteca.Dto.LivroPostPutDto;
+import biblioteca.biblioteca.Dto.LivroPostDto;
+import biblioteca.biblioteca.Dto.LivroPutDto;
 import biblioteca.biblioteca.Dto.LivroResponseDto;
 import biblioteca.biblioteca.Service.LivroCrudService;
 
@@ -22,10 +23,10 @@ public class LivroV1Controller {
 
     @PostMapping("")
     public ResponseEntity<LivroResponseDto> criarLivro(
-            @RequestBody @Valid LivroPostPutDto livroPostPutDto) {
+            @RequestBody @Valid LivroPostDto livroPostDto) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(livroCrudService.criarLivro(livroPostPutDto));
+                .body(livroCrudService.criarLivro(livroPostDto));
     }
 
     @GetMapping("")
@@ -49,23 +50,23 @@ public class LivroV1Controller {
                 .body(livroCrudService.buscarTodosLivros());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{isbn}")
     public ResponseEntity<LivroResponseDto> buscarLivro(@PathVariable String isbn) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(livroCrudService.buscarLivro(isbn));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{isbn}")
     public ResponseEntity<LivroResponseDto> atualizarLivro(
             @PathVariable String isbn,
-            @RequestBody @Valid LivroPostPutDto livroPostPutDto) {
+            @RequestBody @Valid LivroPutDto livroPutDto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(livroCrudService.atualizarLivro(isbn, livroPostPutDto));
+                .body(livroCrudService.atualizarLivro(isbn, livroPutDto));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{isbn}")
     public ResponseEntity<Void> removerLivro(@PathVariable String isbn) {
         livroCrudService.removerLivro(isbn);
         return ResponseEntity

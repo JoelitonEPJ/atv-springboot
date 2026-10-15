@@ -1,8 +1,5 @@
 package biblioteca.biblioteca.Model;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
@@ -32,8 +29,8 @@ public class Livro {
     private String tituloLivro;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "ds_autor", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "id_autor", nullable = false)
+    @JsonProperty("autor")
     private Autor autor;
 
     @Column(name = "ds_ano", nullable = false)
