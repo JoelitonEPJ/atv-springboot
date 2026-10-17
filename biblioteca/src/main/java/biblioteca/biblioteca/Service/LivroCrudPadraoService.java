@@ -31,6 +31,10 @@ public class LivroCrudPadraoService implements LivroCrudService {
 
     @Override
     public LivroResponseDto criarLivro(LivroPostDto livroPostDto) {
+        if (livroRepository.existsById(livroPostDto.getIsbn())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "ISBN já cadastrado");
+        }
+
         Livro livro = modelMapper.map(livroPostDto, Livro.class);
         livro.setAutor(obterAutorExistente(livroPostDto.getAutorId()));
         return modelMapper.map(livroRepository.save(livro), LivroResponseDto.class);
